@@ -68,3 +68,4 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         build-args: |
           VENDOR_VERSION=${{ inputs.version }}
+          PAT_TOKEN=${{ secrets.DEVOPS_RO_TOKEN }}

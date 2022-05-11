@@ -14,6 +14,9 @@ inputs:
   version:
     description: 'Vendor version'
     required: true
+  token:
+    description: 'Personal access token'
+    required: true
   file:
     description: 'Dockerfile name'
     required: false
@@ -68,3 +71,4 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         build-args: |
           VENDOR_VERSION=${{ inputs.version }}
+          PAT_TOKEN=${{ inputs.token }}

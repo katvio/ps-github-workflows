@@ -60,7 +60,7 @@ runs:
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
 
-    - uses: docker/build-push-action@v2
+    - uses: docker/build-push-action@v3
       with:
         context: ${{ inputs.path }}
         file: "${{ inputs.path }}/${{ inputs.file }}"

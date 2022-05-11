@@ -68,3 +68,5 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         build-args: |
           VENDOR_VERSION=${{ inputs.version }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

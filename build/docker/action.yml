@@ -12,8 +12,9 @@ inputs:
     description: 'Docker image tag'
     required: true
   version:
-    description: 'Vendor version'
-    required: true
+    description: 'Docker image version tag (manual)'
+    required: false
+    default: ""
   file:
     description: 'Dockerfile name'
     required: false

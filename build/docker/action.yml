@@ -51,7 +51,7 @@ runs:
     - id: meta
       uses: docker/metadata-action@v3
       with:
-        images: "${{ inputs.registry }}/neospheres/${{ inputs.name }}"
+        images: "${{ inputs.registry }}/mpontoizeau/${{ inputs.name }}"
         tags: |
             ${{ inputs.tag }}
             ${{ inputs.version }}
@@ -72,5 +72,5 @@ runs:
         push: ${{ inputs.push }}
         tags: ${{ steps.meta.outputs.tags }}
         build-args: ${{ inputs.build-args }}
-        cache-from: type=registry,ref=${{ inputs.registry }}/neospheres/${{ inputs.name }}:${{ inputs.tag }}-buildcache
-        cache-to: type=registry,ref=${{ inputs.registry }}/neospheres/${{ inputs.name }}:${{ inputs.tag }}-buildcache,mode=max
+        cache-from: type=registry,ref=${{ inputs.registry }}/mpontoizeau/${{ inputs.name }}:${{ inputs.tag }}-buildcache
+        cache-to: type=registry,ref=${{ inputs.registry }}/mpontoizeau/${{ inputs.name }}:${{ inputs.tag }}-buildcache,mode=max

@@ -74,4 +74,4 @@ runs:
         labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ inputs.build-args }}
         cache-from: type=registry,ref=${{ steps.meta.outputs.tags }}-buildcache
-        cache-to: type=registry,ref=${{ steps.meta.outputs.tags }}buildcache,mode=max
+        cache-to: type=registry,ref=${{ steps.meta.outputs.tags }}-buildcache,mode=max

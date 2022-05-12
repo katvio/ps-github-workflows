@@ -68,9 +68,10 @@ runs:
     - uses: docker/build-push-action@v3
       with:
         context: ${{ inputs.path }}
-        file: "${{ inputs.path }}/${{ inputs.file }}"
+        file: ${{ inputs.path }}/${{ inputs.file }}
         push: ${{ inputs.push }}
         tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ inputs.build-args }}
-        cache-from: type=registry,ref=${{ inputs.registry }}/mpontoizeau/${{ inputs.name }}:${{ inputs.tag }}-buildcache
-        cache-to: type=registry,ref=${{ inputs.registry }}/mpontoizeau/${{ inputs.name }}:${{ inputs.tag }}-buildcache,mode=max
+        cache-from: type=registry,ref=${{ steps.meta.outputs.tags }}-buildcache
+        cache-to: type=registry,ref=${{ steps.meta.outputs.tags }}buildcache,mode=max

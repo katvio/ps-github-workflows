@@ -72,5 +72,5 @@ runs:
         push: ${{ inputs.push }}
         tags: ${{ steps.meta.outputs.tags }}
         build-args: ${{ inputs.build-args }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=registry,ref=${{ inputs.registry }}/neospheres/${{ inputs.name }}:${{ inputs.tag }}-buildcache
+        cache-to: type=registry,ref=${{ inputs.registry }}/neospheres/${{ inputs.name }}:${{ inputs.tag }}-buildcache,mode=max

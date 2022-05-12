@@ -13,10 +13,10 @@ inputs:
     required: true
   version:
     description: 'Vendor version'
-    required: true
+    required: false
   token:
     description: 'Personal access token'
-    required: true
+    required: false
   file:
     description: 'Dockerfile name'
     required: false
@@ -37,6 +37,10 @@ inputs:
     description: "Docker registry password"
     required: false
     default: ${{ github.token }}
+  build-args:
+    description: "Docker build arguments"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -69,8 +73,6 @@ runs:
         file: "${{ inputs.path }}/${{ inputs.file }}"
         push: ${{ inputs.push }}
         tags: ${{ steps.meta.outputs.tags }}
-        build-args: |
-          VENDOR_VERSION=${{ inputs.version }}
-          PAT_TOKEN=${{ inputs.token }}
+        build-args: ${{ inputs.build-args }}
         cache-from: type=gha
         cache-to: type=gha,mode=max

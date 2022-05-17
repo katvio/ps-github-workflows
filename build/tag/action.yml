@@ -33,4 +33,4 @@ runs:
           ;;
         esac
       env:
-        EVENT_REF: ${input.gitref}
+        EVENT_REF: ${inputs.gitref}

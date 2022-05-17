@@ -4,8 +4,7 @@ description: custom local action for docker images
 runs:
   using: "composite"
   steps:
-    - name: Environment
-      run: |
+    - run: |
         echo ${EVENT_REF}
         case "${EVENT_REF}" in
           refs/heads/develop|develop)

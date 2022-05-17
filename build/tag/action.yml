@@ -1,12 +1,17 @@
 name: manage docker repository tag based on branch
 description: custom local action for docker images
 
+inputs:
+  gitref:
+    description: 'git ref triggering the workflow'
+    required: true
+
 runs:
   using: "composite"
   steps:
     - run: |
-        echo ${EVENT_REF}
-        case "${EVENT_REF}" in
+        echo ${input.gitref}
+        case "${input.gitref}" in
           refs/heads/develop|develop)
             echo "::set-output name=tag::dev";
             echo "::set-output name=push::true";
@@ -28,5 +33,3 @@ runs:
             echo "::set-output name=push::false";
           ;;
         esac
-      env:
-        EVENT_REF: ${{ github.base_ref || github.ref }}

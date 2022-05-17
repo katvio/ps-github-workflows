@@ -6,11 +6,20 @@ inputs:
     description: 'git ref triggering the workflow'
     required: true
 
+outputs:
+  tag:
+    description: "Tag string"
+    value: ${{ steps.rules.outputs.tag }}
+  push:
+    description: "Boolean to push"
+    value: ${{ steps.rules.outputs.push }}
+
 runs:
   using: "composite"
   steps:
     - name: "Tag rule"
       shell: bash
+      id: rules
       run: |
         echo "::set-output name=push::true";
         echo "${EVENT_REF}"

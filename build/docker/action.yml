@@ -68,9 +68,10 @@ runs:
     - uses: docker/build-push-action@v3
       with:
         context: ${{ inputs.path }}
-        file: "${{ inputs.path }}/${{ inputs.file }}"
+        file: ${{ inputs.path }}/${{ inputs.file }}
         push: ${{ inputs.push }}
         tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ inputs.build-args }}
         cache-from: type=gha
         cache-to: type=gha,mode=max

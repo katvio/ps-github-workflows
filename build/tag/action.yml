@@ -1,0 +1,50 @@
+name: manage docker repository tag based on branch
+description: custom local action for docker images
+
+inputs:
+  gitref:
+    description: 'git ref triggering the workflow'
+    required: true
+
+outputs:
+  tag:
+    description: "Tag string"
+    value: ${{ steps.rules.outputs.tag }}
+  push:
+    description: "Boolean to push"
+    value: ${{ steps.rules.outputs.push }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Tag rule"
+      shell: bash
+      id: rules
+      run: |
+        echo "::set-output name=push::true";
+        EVENT_REF=${EVENT_REF#*/*/}
+        case "${EVENT_REF}" in
+          develop)
+            echo "::set-output name=tag::dev";
+          ;;
+          devops)
+            echo "::set-output name=tag::devops";
+          ;;
+          release-*)
+            TAG=${EVENT_REF#*-}-beta
+            echo "::set-output name=tag::${TAG}";
+          ;;
+          hotfix-*)
+            TAG=${EVENT_REF#*-}-fix
+            echo "::set-output name=tag::${TAG}";
+          ;;
+          v*.*.*)
+            echo "::set-output name=tag::latest";
+          ;;
+          *)
+            echo "::set-output name=tag::none";
+            echo "::set-output name=push::false";
+          ;;
+        esac
+      env:
+        EVENT_REF: ${{ inputs.gitref }}

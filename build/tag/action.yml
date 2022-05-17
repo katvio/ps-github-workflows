@@ -9,7 +9,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: |
+    - name: "Tag rule"
+      shell: bash
+      run: |
         echo ${input.gitref}
         case "${input.gitref}" in
           refs/heads/develop|develop)

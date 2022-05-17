@@ -22,18 +22,23 @@ runs:
       id: rules
       run: |
         echo "::set-output name=push::true";
-        echo "${EVENT_REF}"
+        EVENT_REF=${EVENT_REF#*/*/}
         case "${EVENT_REF}" in
-          refs/heads/develop|develop)
+          develop)
             echo "::set-output name=tag::dev";
           ;;
-          refs/heads/release-*|release-*|refs/tags/v*.*.*-beta|v*.*.*-beta)
-            echo "::set-output name=tag::next";
-          ;;
-          refs/heads/devops|devops)
+          devops)
             echo "::set-output name=tag::devops";
           ;;
-          refs/tags/v*.*.*|v*.*.*)
+          release-*)
+            TAG=${EVENT_REF#*-}-beta
+            echo "::set-output name=tag::${TAG}";
+          ;;
+          hotfix-*)
+            TAG=${EVENT_REF#*-}-fix
+            echo "::set-output name=tag::${TAG}";
+          ;;
+          v*.*.*)
             echo "::set-output name=tag::latest";
           ;;
           *)

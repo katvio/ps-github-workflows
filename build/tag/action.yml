@@ -1,0 +1,33 @@
+name: manage docker repository tag based on branch
+description: custom local action for docker images
+
+runs:
+  using: "composite"
+  steps:
+    - name: Environment
+      run: |
+        echo ${EVENT_REF}
+        case "${EVENT_REF}" in
+          refs/heads/develop|develop)
+            echo "::set-output name=tag::dev";
+            echo "::set-output name=push::true";
+          ;;
+          refs/heads/release-*|release-*|refs/tags/v*.*.*-beta|v*.*.*-beta)
+            echo "::set-output name=tag::next";
+            echo "::set-output name=push::true";
+          ;;
+          refs/heads/devops|devops)
+            echo "::set-output name=tag::devops";
+            echo "::set-output name=push::true";
+          ;;
+          refs/tags/v*.*.*|v*.*.*)
+            TAG=next
+            PUSH=true
+          ;;
+          *)
+            echo "::set-output name=tag::none";
+            echo "::set-output name=push::false";
+          ;;
+        esac
+      env:
+        EVENT_REF: ${{ github.base_ref || github.ref }}

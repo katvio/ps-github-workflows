@@ -12,8 +12,7 @@ runs:
     - name: "Tag rule"
       shell: bash
       run: |
-        echo ${input.gitref}
-        case "${input.gitref}" in
+        case "${EVENT_REF}" in
           refs/heads/develop|develop)
             echo "::set-output name=tag::dev";
             echo "::set-output name=push::true";
@@ -35,3 +34,5 @@ runs:
             echo "::set-output name=push::false";
           ;;
         esac
+      env:
+        EVENT_REF: ${input.gitref}

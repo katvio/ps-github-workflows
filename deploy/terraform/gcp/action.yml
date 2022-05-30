@@ -1,0 +1,90 @@
+name: terraform deployment action
+description: custom local action for terraform
+
+inputs:
+  environment:
+    description: 'Environment to deploy'
+    required: false
+    default: dev
+  region:
+    description: 'Region to deploy'
+    required: false
+    default: eu
+  plan_args:
+    description: 'Additional terraform argument'
+    required: false
+    default: ""
+  working-directory:
+    description: "Folder path to terraform manifest"
+    required: false
+    default: "./"
+  workload_identity_provider:
+    description: "Identity provider for google auth github action"
+    required: false
+    default: "projects/664850870850/locations/global/workloadIdentityPools/peoplespheres-pool/providers/gh-provider"
+  service_account:
+    description: "GCP service account"
+    required: false
+    default: "github-deployer@peoplespheres-poc-eda.iam.gserviceaccount.com"
+  json_auth:
+    description: "Define GCP authentication mode if true secrets.GOOGLE_CREDENTIALS should be defined. Default to workload identity provider"
+    required: false
+
+outputs:
+  plan:
+    description: "plan step"
+    value: ${{ steps.plan.outputs.stdout }}
+  validate:
+    description: "validate step"
+    value: ${{ steps.validate.outputs.stdout }}
+  init:
+    description: "init step"
+    value: ${{ steps.init.outcome }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: 'auth_identity_provider'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0.6.0'
+      if:  inputs.json_auth == null
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+
+    - id: 'auth_json'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0.6.0'
+      if: inputs.json_auth != null
+      with:
+        token_format: 'access_token'
+        credentials_json: ${{ inputs.json_auth }}
+
+    - uses: hashicorp/setup-terraform@v1.2.1
+      with:
+        terraform_version: 1.1.7
+
+    - name: Terraform Init
+      id: init
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      run: terraform init -reconfigure
+
+    - name: Terraform workspace environment selection
+      id: workspace
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      run: terraform workspace select ${{ inputs.environment }}
+
+    - name: Terraform Validate
+      id: validate
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      run: terraform validate -no-color
+
+    - name: Terraform Plan
+      id: plan
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      run: terraform plan -no-color ${{ inputs.plan_args }}

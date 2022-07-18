@@ -24,7 +24,7 @@ inputs:
     default: "projects/664850870850/locations/global/workloadIdentityPools/peoplespheres-pool/providers/gh-provider"
   service_account:
     description: "GCP service account"
-    required: false
+    required: true
     default: "github-deployer@peoplespheres-poc-eda.iam.gserviceaccount.com"
   json_auth:
     description: "Define GCP authentication mode if true secrets.GOOGLE_CREDENTIALS should be defined. Default to workload identity provider"

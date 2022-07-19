@@ -13,7 +13,7 @@ inputs:
     required: true
   platforms:
     required: false
-    default: "linux/amd64,linux/arm64"
+    default: "linux/amd64,linux/arm64/v8"
   version:
     description: 'Docker image version tag (manual)'
     required: false

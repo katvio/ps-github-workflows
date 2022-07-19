@@ -13,7 +13,7 @@ inputs:
     required: true
   platforms:
     required: false
-    default: "linux/amd64,linux/arm64/v8"
+    default: "linux/amd64"
   version:
     description: 'Docker image version tag (manual)'
     required: false
@@ -61,6 +61,7 @@ runs:
             type=semver,pattern={{version}}
 
     - uses: docker/setup-qemu-action@v2
+      if: inputs.platforms != 'linux/amd64'
       id: qemu
       with:
         platforms: ${{ inputs.platforms }}

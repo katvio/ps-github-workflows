@@ -72,8 +72,17 @@ runs:
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
 
+    - id: google_artifact
+      run: |
+        if [ "${{ inputs.gcp_registry }} != '' ]; then
+            GCP_IMAGE="${{ inputs.gcp_registry }}/${{ inputs.name }}
+        else
+            GCP_IMAGE=""
+        fi
+        echo "::set-output name=image::${GCP_IMAGE}"
+
     # GCP Registry with access token (WIF)
-    - id: 'auth'
+    - id: auth
       uses: 'google-github-actions/auth@v0.6.0'
       if: inputs.gcp_registry != ''
       with:
@@ -94,7 +103,7 @@ runs:
       with:
         images: |
           ${{ inputs.registry }}/neospheres/${{ inputs.name }}
-          ${{ inputs.gcp_registry }}/${{ inputs.name }}
+          ${{ steps.google_artifact.outputs.image }}
         tags: |
             ${{ inputs.tag }}
             ${{ inputs.version }}

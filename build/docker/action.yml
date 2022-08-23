@@ -73,6 +73,7 @@ runs:
         password: ${{ inputs.password }}
 
     - id: google_artifact
+      shell: bash
       run: |
         if [ "${{ inputs.gcp_registry }} != '' ]; then
             GCP_IMAGE="${{ inputs.gcp_registry }}/${{ inputs.name }}

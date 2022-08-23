@@ -94,7 +94,7 @@ runs:
       with:
         images: |
           ${{ inputs.registry }}/neospheres/${{ inputs.name }}
-          ${{ inputs.gcp_registry }}
+          ${{ inputs.gcp_registry }}/${{ inputs.name }}
         tags: |
             ${{ inputs.tag }}
             ${{ inputs.version }}

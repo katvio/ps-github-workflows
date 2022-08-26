@@ -5,8 +5,10 @@ inputs:
   github_token:
     description: 'Docker image tag'
     required: true
+    default: ${{ github.token }}
   sonar_token:
     required: true
+    default: ${{ secrets.SONAR_TOKEN }}
   java_version:
     description: 'Docker image name'
     required: false
@@ -15,6 +17,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Checkout
+      uses: actions/checkout@v3.0.2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
     - uses: actions/setup-java@v1
       with:
         java-version: ${{ java_version }}

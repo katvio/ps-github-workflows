@@ -2,15 +2,15 @@ name: Test, Coverage with SonarQube
 description: Test, Coverage with SonarQube for JAVA with maven
 
 inputs:
-  github_token:
-    description: 'Docker image tag'
-    required: true
-    default: ${{ github.token }}
   sonar_token:
+    description: 'SonarCloud Token'
     required: true
-    default: ${{ secrets.SONAR_TOKEN }}
+  github_token:
+    description: 'Github Token'
+    required: false
+    default: ${{ github.token }}
   java_version:
-    description: 'Docker image name'
+    description: 'Java version number'
     required: false
     default: 17
 
@@ -40,6 +40,7 @@ runs:
         restore-keys: ${{ runner.os }}-m2
 
     - run: mvn -B test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ github_token }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ sonar_token }}

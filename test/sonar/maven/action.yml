@@ -1,0 +1,38 @@
+name: Test, Coverage with SonarQube
+description: Test, Coverage with SonarQube for JAVA with maven
+
+inputs:
+  github_token:
+    description: 'Docker image tag'
+    required: true
+  sonar_token:
+    required: true
+  java_version:
+    description: 'Docker image name'
+    required: false
+    default: 17
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-java@v1
+      with:
+        java-version: ${{ java_version }}
+
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v1
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - run: mvn -B test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+      env:
+        GITHUB_TOKEN: ${{ github_token }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ sonar_token }}

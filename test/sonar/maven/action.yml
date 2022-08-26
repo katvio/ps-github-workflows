@@ -4,7 +4,8 @@ description: Test, Coverage with SonarQube for JAVA with maven
 inputs:
   sonar_token:
     description: 'SonarCloud Token'
-    required: true
+    required: false
+    default: ${{ secrets.SONAR_TOKEN }}
   github_token:
     description: 'Github Token'
     required: false

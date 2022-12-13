@@ -40,10 +40,10 @@ inputs:
 outputs:
   console_url:
     description: "GCP Console URL to access service"
-    value: ${{ steps.info.console.url }}
+    value: ${{ steps.console.outputs.url }}
   service_url:
     description: "GCP URL to access service"
-    value: ${{ steps.info.deploy_cloudrun.url }}
+    value: ${{ steps.deploy_cloudrun.outputs.url }}
 
 runs:
   using: "composite"

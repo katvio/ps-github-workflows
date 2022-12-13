@@ -37,9 +37,23 @@ inputs:
     required: false
     default: ${{ github.token }}
 
+outputs:
+  console_url:
+    description: "GCP Console URL to access service"
+    value: ${{ steps.info.console.url }}
+  service_url:
+    description: "GCP URL to access service"
+    value: ${{ steps.info.deploy_cloudrun.url }}
+
 runs:
   using: "composite"
   steps:
+    - id: console
+      name: 'Add Information to access GCP Console'
+      shell: bash
+      run: |
+        echo "url=https://console.cloud.google.com/run/detail/${{ inputs.region }}/${{ inputs.service }}/metrics?project=${{ inputs.project }}" >  >> $GITHUB_OUTPUT
+
     - id: auth_identity_provider
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1.0.0'
@@ -72,7 +86,6 @@ runs:
         image: ${{ inputs.artifact_registry }}/${{ inputs.image_name }}:${{ inputs.image_version }}
         service: ${{ inputs.service }}
         region: ${{ inputs.region }}
-
     # - id: success
     #   name: Update deployment status (success)
     #   if: success()

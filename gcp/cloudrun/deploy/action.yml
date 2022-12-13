@@ -1,0 +1,94 @@
+name: GCP - Cloud Run deployment action
+description: Generic action to deploy a Cloud Run service
+
+inputs:
+  environment:
+    description: 'Environment to deploy'
+    required: true
+  project:
+    description: 'GCP Project to deploy'
+    required: true
+  region:
+    description: 'GCP Region to deploy'
+    required: true
+  service:
+    description: 'GCP Cloud Run Service to deploy'
+    required: true
+  image_name:
+    description: 'Container image to deploy'
+    required: true
+  image_version:
+    description: 'Container image version to deploy'
+    required: true
+  artifact_registry:
+    description: 'GCP Artifact Registry URL'
+    required: true
+  service_account:
+    description: "GCP service account"
+    required: true
+  workload_identity_provider:
+    description: "Identity provider for google auth github action"
+    required: false
+  json_auth:
+    description: "Define GCP authentication mode if true secrets.GOOGLE_CREDENTIALS should be defined. Default to workload identity provider"
+    required: false
+  github_token:
+    description: "Github Token"
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: auth_identity_provider
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1.0.0'
+      if:  inputs.json_auth == null
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+
+    - id: auth_json
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1.0.0'
+      if: inputs.json_auth != null
+      with:
+        token_format: 'access_token'
+        credentials_json: ${{ inputs.json_auth }}
+
+    - uses: chrnorm/deployment-action@v2
+      name: Create GitHub deployment
+      id: deployment
+      with:
+        token: ${{ inputs.github_token }}
+        environment-url: https://console.cloud.google.com/run/detail/${{ inputs.region }}/${{ inputs.service }}/metrics?project=${{ inputs.project }}
+        environment: ${{ inputs.environment }}
+
+    - id: deploy_cloudrun
+      name: 'Deploy to Cloud Run'
+      uses: 'google-github-actions/deploy-cloudrun@v0'
+      with:
+        image: ${{ inputs.artifact_registry }}/${{ inputs.image_name }}:${{ inputs.image_version }}
+        service: ${{ inputs.service }}
+        region: ${{ inputs.region }}
+
+    - id: success
+      name: Update deployment status (success)
+      if: success()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: ${{ inputs.github_token }}
+        environment-url: ${{ steps.deployment.outputs.environment_url }}
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+        state: 'success'
+
+    - id: failure
+      name: Update deployment status (failure)
+      if: failure()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: ${{ inputs.github_token }}
+        environment-url: ${{ steps.deployment.outputs.environment_url }}
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+        state: 'failure'

@@ -80,11 +80,11 @@ runs:
         else
             GCP_IMAGE=""
         fi
-        echo "::set-output name=image::${GCP_IMAGE}"
+        echo "image=${GCP_IMAGE}" >> $GITHUB_OUTPUT
 
     # GCP Registry with access token (WIF)
     - id: auth
-      uses: 'google-github-actions/auth@v0.6.0'
+      uses: 'google-github-actions/auth@v1'
       if: inputs.gcp_registry != ''
       with:
         token_format: 'access_token'

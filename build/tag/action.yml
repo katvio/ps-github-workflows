@@ -21,30 +21,30 @@ runs:
       shell: bash
       id: rules
       run: |
-        echo "::set-output name=push::true";
+        PUSH=true
         EVENT_REF=${EVENT_REF#*/*/}
         case "${EVENT_REF}" in
           develop)
-            echo "::set-output name=tag::dev";
+            TAG=dev
           ;;
           devops)
-            echo "::set-output name=tag::devops";
+            TAG=devops
           ;;
           release-*)
             TAG=${EVENT_REF#*-}-beta
-            echo "::set-output name=tag::${TAG}";
           ;;
           hotfix-*)
             TAG=${EVENT_REF#*-}-fix
-            echo "::set-output name=tag::${TAG}";
           ;;
           v*.*.*)
-            echo "::set-output name=tag::latest";
+            TAG=latest
           ;;
           *)
-            echo "::set-output name=tag::none";
-            echo "::set-output name=push::false";
+            TAG=none
+            PUSH=false
           ;;
         esac
+        echo "push=${PUSH}" >> $GITHUB_OUTPUT
+        echo "tag=${TAG}" >> $GITHUB_OUTPUT
       env:
         EVENT_REF: ${{ inputs.gitref }}

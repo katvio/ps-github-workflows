@@ -52,7 +52,7 @@ runs:
       name: 'Add Information to access GCP Console'
       shell: bash
       run: |
-        CRYPT_URL=$(echo https://console.cloud.google.com/run/detail/${{ inputs.region }}/${{ inputs.service }}/metrics?project=${{ inputs.project }} | base64 )
+        CRYPT_URL=$(echo "https://console.cloud.google.com/run/detail/${{ inputs.region }}/${{ inputs.service }}/metrics?project=${{ inputs.project }}" | base64 )
         DECRYPT_URL=$(echo ${CRYPT_URL} | base64 -d)
         echo "url=${DECRYPT_URL}"  >> $GITHUB_OUTPUT
 

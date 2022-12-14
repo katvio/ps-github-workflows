@@ -51,9 +51,7 @@ runs:
     - id: console
       name: 'Add Information to access GCP Console'
       shell: bash
-      run: |
-        DECRYPT_URL=$(echo "https://console.cloud.google.com/run/detail/${{ inputs.region }}/${{ inputs.service }}/metrics?project=${{ inputs.project }}" | base64 | base64 -d)
-        echo "url=${DECRYPT_URL}"  >> $GITHUB_OUTPUT
+      run: echo "url=https://console.cloud.google.com/run/detail/${{ inputs.region }}/${{ inputs.service }}/metrics?project=${{ inputs.project }}"  >> $GITHUB_OUTPUT
 
     - id: auth_identity_provider
       name: 'Authenticate to Google Cloud'

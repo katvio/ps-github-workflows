@@ -70,37 +70,12 @@ runs:
         token_format: 'access_token'
         credentials_json: ${{ inputs.json_auth }}
 
-    # - uses: chrnorm/deployment-action@v2
-    #   name: Create GitHub deployment
-    #   id: deployment
-    #   with:
-    #     token: ${{ inputs.github_token }}
-    #     environment-url: https://console.cloud.google.com/run/detail/${{ inputs.region }}/${{ inputs.service }}/metrics?project=${{ inputs.project }}
-    #     environment: ${{ inputs.environment }}
-
     - id: deploy_cloudrun
       name: 'Deploy to Cloud Run'
-      uses: 'google-github-actions/deploy-cloudrun@v0'
+      uses: 'google-github-actions/deploy-cloudrun@v1'
       with:
         image: ${{ inputs.artifact_registry }}/${{ inputs.image_name }}:${{ inputs.image_version }}
         service: ${{ inputs.service }}
         region: ${{ inputs.region }}
-    # - id: success
-    #   name: Update deployment status (success)
-    #   if: success()
-    #   uses: chrnorm/deployment-status@v2
-    #   with:
-    #     token: ${{ inputs.github_token }}
-    #     environment-url: ${{ steps.deployment.outputs.environment_url }}
-    #     deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-    #     state: 'success'
-
-    # - id: failure
-    #   name: Update deployment status (failure)
-    #   if: failure()
-    #   uses: chrnorm/deployment-status@v2
-    #   with:
-    #     token: ${{ inputs.github_token }}
-    #     environment-url: ${{ steps.deployment.outputs.environment_url }}
-    #     deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-    #     state: 'failure'
+        env_vars: |
+          OTEL_RESOURCE_ATTRIBUTES=service.name=${{ inputs.service }},service.version=${{ inputs.image_version }},deployment.environment=${{ inputs.project }}

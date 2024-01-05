@@ -9,3 +9,20 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "/build/docker" # Location of package manifests
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "/build/tag" # Location of package manifests
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "/gcp/cloudrun/deploy" # Location of package manifests
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "/test/sonar/maven" # Location of package manifests
+    schedule:
+      interval: "daily"
+

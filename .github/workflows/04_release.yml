@@ -1,0 +1,41 @@
+name: "Release"
+
+on:
+  release:
+    types: [ released ]
+
+permissions:
+  actions: write
+  contents: write
+
+jobs:
+  release:
+    name: Release
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Parse version from tag
+        id: version
+        uses: release-kit/semver@v2
+
+# MARK RELEASE AS LATEST
+
+      - name: Tag major and minor versions
+        id: tags
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/google-github-actions/release-please-action.git"
+          git tag -d v${{ steps.version.outputs.major }} || true
+          git tag -d v${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }} || true
+          git push origin :v${{ steps.version.outputs.major }} || true
+          git push origin :v${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }} || true
+          git tag -a v${{ steps.version.outputs.major }} -m "Release v${{ steps.version.outputs.major }}"
+          git tag -a v${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }} -m "Release v${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}"
+          git push origin v${{ steps.version.outputs.major }}
+          git push origin v${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}

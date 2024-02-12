@@ -33,8 +33,14 @@ runs:
           release-*)
             TAG=${EVENT_REF#*-}-beta
           ;;
+          release/*)
+            TAG=${EVENT_REF#*/}-beta
+          ;;
           hotfix-*)
             TAG=${EVENT_REF#*-}-fix
+          ;;
+          hotfix/*)
+            TAG=${EVENT_REF#*/}-fix
           ;;
           v*.*.*)
             TAG=latest

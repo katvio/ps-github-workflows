@@ -30,7 +30,7 @@ inputs:
   push:
     description: "Push image to registry"
     required: false
-    default: "false"
+    default: "true"
   registry:
     description: "Docker registry to use"
     required: false
@@ -59,6 +59,22 @@ inputs:
     description: "GCP service account"
     required: false
     default: ""
+  environment:
+    type: choice
+    required: false
+    options:
+      - dev
+      - qat
+      - ppd
+      - prd
+
+    default: "dev"
+    description: "Deployment environment"
+
+outputs:
+  sha_short:
+    description: "sha short of the image"
+    value: ${{ steps.extract_sha_short.outputs.sha_short }}
 
 runs:
   using: "composite"
@@ -111,12 +127,19 @@ runs:
           ${{ inputs.registry }}/neospheres/${{ inputs.name }}
           ${{ steps.google_artifact.outputs.image }}
         tags: |
-            ${{ inputs.tag }}
-            ${{ inputs.version }}
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+          # sha short
+          type=sha,enable=true,prefix=,suffix=,format=short, priority=1000
+          
+          # tag event
+          type=ref,enable=true,priority=600,prefix=,suffix=,event=tag
+          # pull request event
+          type=ref,enable=true,priority=600,prefix=pr-,suffix=,event=pr
+
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,enable=true,prefix=,suffix=,value=${{ inputs.environment }}
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,enable=true,prefix=,suffix=,value={{date 'YYYYMMDDHHmmss' tz='Europe/Paris'}}
 
     - id: qemu
       uses: docker/setup-qemu-action@v3
@@ -139,3 +162,18 @@ runs:
         provenance: false
         secrets: |
             GIT_AUTH_TOKEN=${{ inputs.github_token }}
+
+    - name: Extract sha short from image tag
+      id: extract_sha_short
+      run: |
+        TAG=${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+        echo "sha_short=$(echo $TAG | cut -d ":" -f2)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    # - name: Retag the image
+    #   if: inputs.release_tag != 'none'
+    #   uses: abronin/ecr-retag-action@v1
+    #   with:
+    #     repository: ${{ inputs.service }}
+    #     tag: ${{ inputs.environment }}
+    #     new-tags: ${{ inputs.release_tag }}

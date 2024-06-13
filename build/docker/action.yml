@@ -117,6 +117,7 @@ runs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
+            type=sha
 
     - id: qemu
       uses: docker/setup-qemu-action@v3

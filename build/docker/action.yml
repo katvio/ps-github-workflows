@@ -108,7 +108,7 @@ runs:
       uses: docker/metadata-action@v5
       with:
         images: |
-          ${{ inputs.registry }}/neospheres/${{ inputs.name }}
+          ${{ inputs.registry }}/${{ inputs.name }}
           ${{ steps.google_artifact.outputs.image }}
         tags: |
             ${{ inputs.tag }}

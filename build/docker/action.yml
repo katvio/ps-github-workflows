@@ -16,6 +16,10 @@ inputs:
     description: 'Docker image tag'
     required: false
     default: ""
+  tag2:
+    description: 'Docker image tag number 2'
+    required: false
+    default: ""
   platforms:
     required: false
     default: "linux/amd64"
@@ -112,12 +116,12 @@ runs:
           ${{ steps.google_artifact.outputs.image }}
         tags: |
             ${{ inputs.tag }}
+            ${{ inputs.tag2 }}
             ${{ inputs.version }}
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=sha
 
     - id: qemu
       uses: docker/setup-qemu-action@v3

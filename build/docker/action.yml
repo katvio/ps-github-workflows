@@ -12,12 +12,12 @@ inputs:
   name:
     description: 'Docker image name'
     required: true
-  tag:
-    description: 'Docker image tag'
+  tag1:
+    description: 'Docker image tag 1'
     required: false
     default: ""
   tag2:
-    description: 'Docker image tag number 2'
+    description: 'Docker image tag 2'
     required: false
     default: ""
   platforms:
@@ -115,7 +115,7 @@ runs:
           ${{ inputs.registry }}/${{ inputs.name }}
           ${{ steps.google_artifact.outputs.image }}
         tags: |
-            ${{ inputs.tag }}
+            ${{ inputs.tag1 }}
             ${{ inputs.tag2 }}
             ${{ inputs.version }}
             type=ref,event=pr
